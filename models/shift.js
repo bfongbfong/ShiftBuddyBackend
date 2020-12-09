@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+require('../enums/ShiftTypes');
+require('../enums/ShiftLengths');
+require('../enums/ShiftStatuses');
 
 const ShiftSchema = mongoose.Schema({
     id: { 

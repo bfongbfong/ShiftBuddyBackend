@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+require('../enums/JobClassifications');
 
 const UserSchema = mongoose.Schema({
     firstName: { 
@@ -12,7 +13,7 @@ const UserSchema = mongoose.Schema({
     },
     classification: { 
         type: String, 
-        enum: Classifications, 
+        enum: JobClassifications, 
         required: true 
     },
     email: { 
