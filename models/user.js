@@ -3,6 +3,14 @@ const { Schema } = mongoose;
 require('../enums/JobClassifications');
 
 const UserSchema = mongoose.Schema({
+    employeeID: {
+        type: String, 
+        required: true 
+    },
+    workEmail: {
+        type: String, 
+        required: true 
+    },
     firstName: { 
         type: String, 
         required: true 
@@ -12,8 +20,8 @@ const UserSchema = mongoose.Schema({
         required: true 
     },
     classification: { 
-        type: String, 
-        enum: JobClassifications, 
+        type: Schema.Types.ObjectId, 
+        ref: 'JobClassification',
         required: true 
     },
     email: { 
@@ -29,3 +37,5 @@ const UserSchema = mongoose.Schema({
         ref: 'Group'
     }
 });
+
+module.exports = mongoose.model('User', UserSchema);
