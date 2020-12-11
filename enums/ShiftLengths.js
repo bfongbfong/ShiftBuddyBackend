@@ -1,4 +1,4 @@
 ShiftLengths = [
-    '8 hour',
-    '12 hour'
+    '8hour',
+    '12hour'
 ]
