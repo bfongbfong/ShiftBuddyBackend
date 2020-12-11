@@ -12,6 +12,8 @@ const mongoose = require('mongoose');
 // const config = require('config'); // taken from rz
 const cors = require('cors'); // taken from rz, not sure what it does
 
+const authorization = require('./middleware/authorization');
+
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/authDemo', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -37,7 +39,7 @@ app.get("/", (req, res) => {
 })
 
 app.use('/users', userRoutes);
-app.use('/shifts', shiftRoutes);
+app.use('/shifts', authorization.auth, shiftRoutes);
 
 app.listen(3000, () => {
     console.log("serving app on localhost:3000")

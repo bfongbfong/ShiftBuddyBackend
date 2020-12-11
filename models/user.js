@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 require('../enums/JobClassifications');
+const saltRounds = 12;
 
 const UserSchema = mongoose.Schema({
     firstName: { 
@@ -39,5 +40,17 @@ const UserSchema = mongoose.Schema({
         }
     ]
 });
+
+UserSchema.pre('save', async function (next) {
+    const user = this;
+    if (!user.isModified('password')) {
+        return next();
+    }
+
+    user.password = await bcrypt.hash(user.password, saltRounds);
+
+    next();
+});
+
 
 module.exports = mongoose.model('User', UserSchema);

@@ -5,10 +5,11 @@ require('../enums/ShiftLengths');
 require('../enums/ShiftStatuses');
 
 const ShiftSchema = mongoose.Schema({
-    id: { 
-        type: String, 
-        required: true 
-    },
+    // might not need this if mongo provides its own id
+    // id: { 
+    //     type: String, 
+    //     required: true 
+    // },
     user: { 
         type: Schema.Types.ObjectId, 
         ref: "User"
@@ -23,18 +24,22 @@ const ShiftSchema = mongoose.Schema({
         enum: ShiftLengths, 
         required: true 
     },
-    status: { 
+    openForTrade: { // if this is true, anyone in the unit can see. if not, it is private.
+        type: Boolean,
+        default: false
+    },
+    status: { // this should be determined if openForTrade becomes true
         type: String, 
         enum: ShiftStatuses, 
-        required: true 
+        default: 'none'
     },
     date: { 
         type: Date, 
         required: true 
     },
-    unit: { 
+    group: { 
         type: Schema.Types.ObjectId, 
-        ref: "Unit" 
+        ref: "Group" 
     }
 });
 
