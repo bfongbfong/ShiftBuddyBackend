@@ -44,8 +44,23 @@ const GroupSchema = mongoose.Schema({
                 enum: ShiftLengths
             }
         }
-
     ],
+    admins: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
+    members: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
+    memberCount: { // somehow get it to always equal the number of members
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = mongoose.model('Group', GroupSchema);

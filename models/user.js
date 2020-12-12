@@ -83,9 +83,11 @@ const UserSchema = mongoose.Schema({
             },
             workEmail: {
                 type: String,
+                required: true
             },
             employeeID: {
                 type: String, 
+                required: true
             }
         }
     ],

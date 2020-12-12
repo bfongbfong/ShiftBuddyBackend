@@ -1,7 +1,5 @@
-// const mongoose = require('mongoose');
 const userModel = require('../models/user');
 const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
 
 class UserController {
     static register(body) {
@@ -67,6 +65,8 @@ class UserController {
                     token: token,
                     user: user
                 };
+
+                console.log(returnObj);
 
                 resolve(returnObj);
             });

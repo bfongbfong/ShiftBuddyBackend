@@ -4,8 +4,9 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const createError = require('http-errors');
 
-const shiftRoutes = require('./routes/shifts');
 const userRoutes = require('./routes/users');
+const shiftRoutes = require('./routes/shifts');
+const groupRoutes = require('./routes/groups');
 
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -40,6 +41,7 @@ app.get("/", (req, res) => {
 
 app.use('/users', userRoutes);
 app.use('/shifts', authorization.auth, shiftRoutes);
+app.use('/groups', authorization.auth, groupRoutes);
 
 app.listen(3000, () => {
     console.log("serving app on localhost:3000")
