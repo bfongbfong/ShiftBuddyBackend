@@ -18,6 +18,18 @@ router.get('/', async (req, res) => {
     // res.json();
 });
 
+router.post('/', async (req, res) => {
+    console.log('a new group is being made');
+
+    await GroupController.createNewGroup(req.body, req.user)
+    .then(resObj => {
+        res.json(resObj);
+    })
+    .catch(err => {
+        res.status(err.code || 500).json({ errorMessage: err.message });
+    })
+});
+
 
 // export the module
 module.exports = router;

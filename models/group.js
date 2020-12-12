@@ -36,12 +36,14 @@ const GroupSchema = mongoose.Schema({
         // the jobs that are here
         {
             classification: {
-                name: String,
+                type: String,
                 enum: JobClassifications,
+                required: true
             },
             shiftLength: {
-                name: String,
-                enum: ShiftLengths
+                type: String,
+                enum: ShiftLengths,
+                required: true
             }
         }
     ],

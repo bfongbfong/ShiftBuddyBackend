@@ -10,9 +10,9 @@ module.exports = {
             // console.log(decodedToken);
 
             userModel.findOne({ _id: decodedToken.userId }, (err, user) => {
-                console.log('user finding done');
-                console.log(err);
-                console.log(user);
+                // console.log('user finding done');
+                // console.log(err);
+                // console.log(user);
                 if (err) {
                     return res.status(500).json({ message: "Internal Error, Database" });
                 } else if (!user) {
