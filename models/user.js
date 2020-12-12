@@ -113,5 +113,8 @@ UserSchema.pre('save', async function (next) {
     next();
 });
 
+UserSchema.methods.comparePassword = function(candidatePassword) {
+    return bcrypt.compareSync(candidatePassword, this.password); // did it sync RZ said "for control"
+}
 
 module.exports = mongoose.model('User', UserSchema);
