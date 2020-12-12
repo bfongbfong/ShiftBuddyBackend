@@ -1,7 +1,39 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 require('../enums/JobClassifications');
+const bcrypt = require('bcrypt');
+const { UnavailableForLegalReasons } = require('http-errors');
 const saltRounds = 12;
+
+const passwordLengthChecker = (password) => {
+
+    if (!password) {
+        return false;
+    } else {
+        return (password.length >= 6 && password.length <= 35);
+    }
+};
+
+const validPassword = (password) => {
+
+    if (!password) {
+        return false;
+    } else {
+        const regExp = new RegExp(/^(?=.*?[a-zA-Z])(?=.*?[\d]).{6,35}$/);
+        return regExp.test(password);
+    }
+}
+
+const passwordValidators = [
+    {
+        validator: passwordLengthChecker,
+        message: 'Password must be between 6 and 35 characters.'
+    },
+    {
+        validator: validPassword,
+        message: 'Password must contain one letter and one number.'
+    }
+];
 
 const UserSchema = mongoose.Schema({
     firstName: { 
@@ -23,7 +55,8 @@ const UserSchema = mongoose.Schema({
     },
     password: { 
         type: String, 
-        required: true 
+        required: true,
+        validate: passwordValidators
     },
     groups: [
         {
@@ -38,8 +71,19 @@ const UserSchema = mongoose.Schema({
                 type: String, 
             }
         }
-    ]
+    ],
+    isPremium: {
+        type: Boolean,
+        default: false
+    }
 });
+
+UserSchema.set('toJSON', {
+    transform: function(doc, ret, opt) {
+        delete ret.password
+        return ret;
+    }
+})
 
 UserSchema.pre('save', async function (next) {
     const user = this;

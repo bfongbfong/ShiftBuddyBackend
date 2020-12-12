@@ -1,28 +1,44 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = express('mongoose');
+const Util = require('../util/util');
+const constants = require('../util/constants');
+
+const { body: check, validationResult } = require('express-validator');
 
 const User = require('../models/user');
+const UserController = require('../controllers/userController');
 
 const bcrypt = require('bcrypt');
 
+// Validation within the route checks if the values are empty or not.
+// Validation for email and password happen in mongoose
+const emptyErrMsgSuffix = ' must be provided.'
+router.post('/register', [
+    check('email').not().isEmpty().withMessage('Email' + emptyErrMsgSuffix),
+    check('password').not().isEmpty().withMessage('Password' + emptyErrMsgSuffix),
+    check('firstName').not().isEmpty().withMessage('First name' + emptyErrMsgSuffix),
+    check('lastName').not().isEmpty().withMessage('Last name' + emptyErrMsgSuffix),
+    check('classification').not().isEmpty().withMessage('Classification' + emptyErrMsgSuffix),
+], async (req, res) => {
 
-router.post('/register', async (req, res) => {
-    const { password, email, firstName, lastName, classification } = req.body; 
-    const hash = await bcrypt.hash(password, 12)
-    .catch(e => {
-        console.log(`ERROR! ${e}`);
-    });
-    const user = new User({
-        firstName,
-        lastName,
-        email,
-        password: hash,
-        classification
+    // validate missing field errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const errs = errors.array();
+        return res.status(400).json({ errorMessage: errs[0].msg });
+    }
+
+    await UserController.register(req.body)
+    .then(resultObj => {
+        return res.json(resultObj);
     })
-    const newUser = await user.save();
-    console.log(newUser);
-    res.send(req.body);
+    .catch(err => { 
+        console.log('error here');
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+
+        return res.status(err.code || 500).json({ errorMessage: errorMsg });
+    });
 })
 
 router.post('/login', async (req, res) => {
@@ -46,7 +62,7 @@ router.post('/login', async (req, res) => {
             'errorMessage': errorMessage
         })
     });
-    
+
     if (validPassword) {
         const successMessage = "WOO THAT'S THE RIGHT PASSWORD!!";
         console.log(successMessage);
