@@ -35,6 +35,22 @@ const passwordValidators = [
     }
 ];
 
+const validEmail = (email) => {
+    if (!email) {
+        return false;
+    } else {
+        const regExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+        return regExp.test(email);
+    }
+}
+
+const emailValidators = [
+    {
+        validator: validEmail,
+        message: 'Email must be valid.'
+    },
+]
+
 const UserSchema = mongoose.Schema({
     firstName: { 
         type: String, 
@@ -46,12 +62,13 @@ const UserSchema = mongoose.Schema({
     },
     classification: { 
         type: String,
-        enums: JobClassifications,
+        enum: JobClassifications,
         required: true 
     },
     email: { 
         type: String, 
-        required: true 
+        required: true,
+        validate: emailValidators
     },
     password: { 
         type: String, 

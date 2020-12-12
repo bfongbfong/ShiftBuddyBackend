@@ -34,6 +34,12 @@ class UserController {
             })
         });
     }
+
+    static login(body) {
+        return new Promise((resolve, reject) => {
+
+        });
+    }
 }
 
 module.exports = UserController;
