@@ -8,7 +8,7 @@ class GroupController {
                 departmentName,
                 isOpen,
                 groupID, 
-                hospitalName, 
+                hospital, 
                 staffingCoordinatorEmail, 
                 isPrivate,
                 classifications
@@ -17,7 +17,7 @@ class GroupController {
             const group = new groupModel({
                 name,
                 groupID,
-                hospitalName,
+                hospital,
                 departmentName,
                 staffingCoordinatorEmail,
                 isOpen,

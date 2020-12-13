@@ -8,13 +8,9 @@ const GroupSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    groupID: { // only if this is special, if not, just use mongo's _id
-        type: String,
-        required: true
-    },
-    hospitalName: {
-        type: String,
-        required: true
+    hospital: {
+        type: Schema.Types.ObjectId,
+        required: 'Hospital'
     },
     departmentName: {
         type: String,
@@ -62,6 +58,9 @@ const GroupSchema = mongoose.Schema({
     memberCount: { // somehow get it to always equal the number of members
         type: Number,
         default: 0
+    },
+    imageUrl: {
+        type: String
     }
 });
 

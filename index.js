@@ -7,6 +7,7 @@ const createError = require('http-errors');
 const userRoutes = require('./routes/users');
 const shiftRoutes = require('./routes/shifts');
 const groupRoutes = require('./routes/groups');
+const hospitalRoutes = require('./routes/hospital');
 
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -41,7 +42,8 @@ app.get("/", (req, res) => {
 
 app.use('/users', userRoutes);
 app.use('/shifts', authorization.auth, shiftRoutes);
-app.use('/groups', authorization.auth, groupRoutes);
+app.use('/groups', groupRoutes);
+app.use('/hospitals', hospitalRoutes);
 
 app.listen(3000, () => {
     console.log("serving app on localhost:3000")

@@ -94,6 +94,9 @@ const UserSchema = mongoose.Schema({
     isPremium: {
         type: Boolean,
         default: false
+    },
+    profileImgUrl: {
+        type: String
     }
 });
 
