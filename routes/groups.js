@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
         Group.find().or([{ name: regex, isPrivate: false }, { name: regex, members: req.user }, { hospitalName: regex, isPrivate: false }, { hospitalName: regex, members: req.user }]).limit(parseInt(number))
         .then(groupsFoundByName => {
             console.log(groupsFoundByName);
-            return res.json(groupsFoundByName);
+            return res.json({ groups: groupsFoundByName });
         })
         .catch(error => {
             console.log(error);
