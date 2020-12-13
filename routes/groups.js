@@ -4,18 +4,32 @@ const app = express();
 // import the router
 const router = express.Router();
 
+const Group = require('../models/group');
 const GroupController = require('../controllers/groupController');
 
-
+// retrieves the groups that the user is part of
 router.get('/', async (req, res) => {
-    // make a groupController to handle logic
-    // GroupController.getGroups() // method to get the groups a user belongs to. 
+    const { searchterm, number } = req.query;
+    if (searchterm) {
+        if (number) {
+            console.log(`looking for number ${number}`);
+        }
 
-    console.log('groups was requested');
-    // req.user is made in the authorization middleware
-    return res.json({ groups: req.user.groups });
-    // send a json response
-    // res.json();
+        const regex = new RegExp(searchterm, 'i');
+        // if is private, the user must be within the list of members.
+        Group.find().or([{ name: regex, isPrivate: false }, { name: regex, members: req.user }, { hospitalName: regex, isPrivate: false }, { hospitalName: regex, members: req.user }]).limit(parseInt(number))
+        .then(groupsFoundByName => {
+            console.log(groupsFoundByName);
+            return res.json(groupsFoundByName);
+        })
+        .catch(error => {
+            console.log(error);
+            return res.json({ message: `error searching with string ${req.query.searchterm}`});
+        });
+    } else {
+        // req.user is made in the authorization middleware
+        return res.json({ groups: req.user.groups });
+    }
 });
 
 router.post('/', async (req, res) => {
@@ -29,7 +43,6 @@ router.post('/', async (req, res) => {
         res.status(err.code || 500).json({ errorMessage: err.message });
     })
 });
-
 
 // export the module
 module.exports = router;
