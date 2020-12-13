@@ -3,6 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const createError = require('http-errors');
+require('dotenv').config();
 
 const userRoutes = require('./routes/users');
 const shiftRoutes = require('./routes/shifts');

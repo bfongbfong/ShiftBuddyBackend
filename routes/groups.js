@@ -20,8 +20,8 @@ router.get('/', async (req, res) => {
     // if is private, the user must be within the list of members.
     Group.find().or([{ name: regex, isPrivate: false }, { name: regex, members: req.user }, { hospitalName: regex, isPrivate: false }, { hospitalName: regex, members: req.user }]).limit(parseInt(number))
     .then(groupsFoundByName => {
-        console.log(groupsFoundByName);
-        return res.json({ groups: groupsFoundByName });
+        console.log(groups);
+        return res.json({ groups });
     })
     .catch(error => {
         console.log(error);
@@ -32,8 +32,8 @@ router.get('/', async (req, res) => {
 router.get('/:groupId', (req, res) => {
     const { groupId } = req.params;
     Group.findById(groupId)
-    .then(foundGroup => {
-        return res.json(foundGroup)
+    .then(group => {
+        return res.json({ group });
     })
     .catch(err => {
         console.log(err);
@@ -42,10 +42,10 @@ router.get('/:groupId', (req, res) => {
     })
 });
 
-router.post('/', authorization.auth, async (req, res) => {
+router.post('/', authorization.auth, (req, res) => {
     console.log('a new group is being made');
 
-    await GroupController.createNewGroup(req.body, req.user)
+    GroupController.createNewGroup(req.body, req.user)
     .then(resObj => {
         res.json(resObj);
     })
