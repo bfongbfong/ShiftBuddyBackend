@@ -2,16 +2,37 @@ const express = require('express');
 const { Mongoose } = require('mongoose');
 const router = express.Router();
 const { body: check, validationResult } = require('express-validator');
+const authorization = require('../middleware/authorization');
+const User = require('../models/user');
+const Shift = require('../models/shift');
 
 const shiftModel = require('../models/shift');
 
+// this route
+// no need for authorization here.
 router.get('/:user_id', (req, res) => {
     const { user_id } = req.params;
-    return res.json({"name": "brandon", "age": 24, "user_id": user_id});
+    const { group, month, year } = req.query;
+
+    const start = new Date(year, month, 1);
+    const nextMonth = new Date(year, month + 1, 1);
+    nextMonth.setDate(nextMonth.getDate() - 1);
+    const end = new Date(nextMonth);
+
+    Shift.find({ user: user_id, group: group, date: { $gte: start, $lte: end } })
+    .then(shifts => {
+        return res.json({ shifts })
+    })
+    .catch(err => {
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        return res.status(err.code || 500).json({ errorMessage: errorMsg });    
+    });
 });
 
+
+// how do i pass the auth middleware into this route
 const emptyErrMsgSuffix = ' must be provided.'
-router.post('/', [
+router.post('/', authorization.auth, [
     check('type').not().isEmpty().withMessage('Type' + emptyErrMsgSuffix),
     check('length').not().isEmpty().withMessage('Length' + emptyErrMsgSuffix),
     check('openForTrade').not().isEmpty().withMessage('OpenForTrade' + emptyErrMsgSuffix),
@@ -26,8 +47,9 @@ router.post('/', [
         return res.status(400).json({ errorMessage: errs[0].msg });
     }
     
+    // extract to controller
     const shift = new shiftModel({
-        user: req.body.user,
+        user: req.user,
         type: req.body.type,
         length: req.body.length,
         openForTrade: req.body.openForTrade,
@@ -36,13 +58,15 @@ router.post('/', [
         group: req.body.group
     });
 
+    // need to ensure this isn't already a shift with this same date
     shift.save()
     .then(shift => {
         return res.json({ shift });
     })
     .catch(err => {
         const errorMsg = err.message || constants.UKNOWN_ERROR;
-        return res.status(err.code || 500).json({ errorMessage: errorMsg });    });
+        return res.status(err.code || 500).json({ errorMessage: errorMsg });    
+    });
 });
 
 module.exports = router;

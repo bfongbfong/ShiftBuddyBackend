@@ -42,7 +42,7 @@ app.get("/", (req, res) => {
 })
 
 app.use('/users', userRoutes);
-app.use('/shifts', authorization.auth, shiftRoutes);
+app.use('/shifts', shiftRoutes);
 app.use('/groups', groupRoutes);
 app.use('/hospitals', hospitalRoutes);
 

@@ -5,14 +5,10 @@ require('../enums/ShiftLengths');
 require('../enums/ShiftStatuses');
 
 const ShiftSchema = mongoose.Schema({
-    // might not need this if mongo provides its own id
-    // id: { 
-    //     type: String, 
-    //     required: true 
-    // },
     user: { 
         type: Schema.Types.ObjectId, 
-        ref: "User"
+        ref: "User",
+        required: true
     },
     type: { 
         type: String, 
