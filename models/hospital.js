@@ -6,9 +6,17 @@ const hospitalSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    location: {
+    locationString: {
         type: String,
         required: true
+    },
+    latitude: {
+        type: Number,
+        required: true
+    },
+    longitude: {
+        type: Number,
+        requried: true
     },
     groups: [ 
         {

@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
     const regex = new RegExp(searchterm, 'i');
     // if is private, the user must be within the list of members.
     Group.find().or([{ name: regex, isPrivate: false }, { name: regex, members: req.user }, { hospitalName: regex, isPrivate: false }, { hospitalName: regex, members: req.user }]).limit(parseInt(number))
-    .then(groupsFoundByName => {
+    .then(groups => {
         console.log(groups);
         return res.json({ groups });
     })
