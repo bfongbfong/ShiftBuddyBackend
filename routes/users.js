@@ -13,6 +13,8 @@ const bcrypt = require('bcrypt');
 
 const authorization = require('../middleware/authorization');
 
+
+// CREATE
 // Validation within the route checks if the values are empty or not.
 // Validation for email and password happen in mongoose
 const emptyErrMsgSuffix = ' must be provided.'
@@ -42,6 +44,7 @@ router.post('/register', [
     });
 })
 
+// READ
 router.post('/login', async (req, res) => {
     await UserController.login(req.body)
     .then(resultObj => {
@@ -52,6 +55,38 @@ router.post('/login', async (req, res) => {
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     });
 });
+
+router.put('/', authorization.auth, (req, res) => {
+    if (req.body.password) {
+        delete req.body.password;
+    }
+    if (req.body.email) {
+        delete req.body.email;
+    }
+    User.findByIdAndUpdate(
+        req.user, 
+        req.body, 
+        { 
+            new: true, 
+            runValidators: true 
+        }, 
+        (err, user) => {
+        if (err) {
+            return res.status(err.status || 500).json({ errorMessage: err.message });
+        }
+        if (!user) {
+            return res.status(err.status || 404).json({ errorMessage: 'User not found' });
+        }
+
+        return res.json({ user });
+    });
+});
+
+router.get('/userInfo', authorization.auth, (req, res) => {
+    const { user } = req;
+    return res.json({ user });
+});
+
 
 // retrieves the groups that the user is part of
 router.get('/:userId/groups', async (req, res) => {
