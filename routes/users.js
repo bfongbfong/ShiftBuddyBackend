@@ -94,8 +94,12 @@ router.put('/', authorization.auth, (req, res) => {
 // DELETE
 router.delete('/', authorization.auth, (req, res) => {
     User.findByIdAndDelete(req.user)
-    .then(data => {
-        return res.json({ data });
+    .then(user => {
+        return res.json({ message: `Successfully deleted user ${ req.user._id }` });
+    })
+    .catch(err => {
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        return res.status(err.code || 500).json({ errorMessage: errorMsg });
     })
 });
 

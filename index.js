@@ -8,7 +8,7 @@ require('dotenv').config();
 const userRoutes = require('./routes/users');
 const shiftRoutes = require('./routes/shifts');
 const groupRoutes = require('./routes/groups');
-const hospitalRoutes = require('./routes/hospital');
+const hospitalRoutes = require('./routes/hospitals');
 
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -45,6 +45,11 @@ app.use('/users', userRoutes);
 app.use('/shifts', shiftRoutes);
 app.use('/groups', groupRoutes);
 app.use('/hospitals', hospitalRoutes);
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+    return res.status(404).json({ errorMessage: '404 NOT FOUND.' });
+});
 
 app.listen(3000, () => {
     console.log("serving app on localhost:3000")
