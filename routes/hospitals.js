@@ -1,11 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const Hospital = require('../models/hospital');
+const Constants = require('../util/constants');
+const { body: check, validationResult } = require('express-validator');
 
 const HospitalController = require('../controllers/hospitalController');
 
 // CREATE
-router.post('/', (req, res) => {
+const { emptyErrMsgSuffix } = Constants;
+router.post('/', [
+    check('name').not().isEmpty().withMessage('Name' + emptyErrMsgSuffix),
+    check('locationString').not().isEmpty().withMessage('locationString' + emptyErrMsgSuffix),
+    check('latitude').not().isEmpty().withMessage('Latitude' + emptyErrMsgSuffix),
+    check('longitude').not().isEmpty().withMessage('Longitude' + emptyErrMsgSuffix),
+], (req, res) => {
+    // validate missing field errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const errs = errors.array();
+        return res.status(400).json({ errorMessage: errs[0].msg });
+    }
+
     HospitalController.createNewHospital(req.body)
     .then(hospital => {
         return res.json({hospital});

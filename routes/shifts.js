@@ -5,10 +5,10 @@ const { body: check, validationResult } = require('express-validator');
 const authorization = require('../middleware/authorization');
 const User = require('../models/user');
 const Shift = require('../models/shift');
+const Constants = require('../util/constants');
 
 const shiftModel = require('../models/shift');
 
-// this route
 // no need for authorization here.
 router.get('/:user_id', (req, res) => {
     const { user_id } = req.params;
@@ -29,9 +29,7 @@ router.get('/:user_id', (req, res) => {
     });
 });
 
-
-// how do i pass the auth middleware into this route
-const emptyErrMsgSuffix = ' must be provided.'
+const { emptyErrMsgSuffix } = Constants;
 router.post('/', authorization.auth, [
     check('type').not().isEmpty().withMessage('Type' + emptyErrMsgSuffix),
     check('length').not().isEmpty().withMessage('Length' + emptyErrMsgSuffix),

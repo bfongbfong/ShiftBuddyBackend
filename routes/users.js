@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = express('mongoose');
-const Util = require('../util/util');
-const constants = require('../util/constants');
+const Constants = require('../util/constants');
 
 const { body: check, validationResult } = require('express-validator');
 
@@ -29,7 +28,7 @@ router.post('/login', async (req, res) => {
 // CREATE
 // Validation within the route checks if the values are empty or not.
 // Validation for email and password happen in mongoose
-const emptyErrMsgSuffix = ' must be provided.'
+const { emptyErrMsgSuffix } = Constants;
 router.post('/register', [
     check('email').not().isEmpty().withMessage('Email' + emptyErrMsgSuffix),
     check('password').not().isEmpty().withMessage('Password' + emptyErrMsgSuffix),
