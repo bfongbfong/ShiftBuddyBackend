@@ -9,27 +9,9 @@ const Constants = require('../util/constants');
 
 const shiftModel = require('../models/shift');
 
-// no need for authorization here.
-router.get('/:user_id', (req, res) => {
-    const { user_id } = req.params;
-    const { group, month, year } = req.query;
-
-    const start = new Date(year, month, 1);
-    const nextMonth = new Date(year, month + 1, 1);
-    nextMonth.setDate(nextMonth.getDate() - 1);
-    const end = new Date(nextMonth);
-
-    Shift.find({ user: user_id, group: group, date: { $gte: start, $lte: end } })
-    .then(shifts => {
-        return res.json({ shifts })
-    })
-    .catch(err => {
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
-        return res.status(err.code || 500).json({ errorMessage: errorMsg });    
-    });
-});
-
 const { emptyErrMsgSuffix } = Constants;
+
+// CREATE
 router.post('/', authorization.auth, [
     check('type').not().isEmpty().withMessage('Type' + emptyErrMsgSuffix),
     check('length').not().isEmpty().withMessage('Length' + emptyErrMsgSuffix),
@@ -64,6 +46,71 @@ router.post('/', authorization.auth, [
     .catch(err => {
         const errorMsg = err.message || constants.UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });    
+    });
+});
+
+// READ
+router.get('/:shiftId', (req, res) => {
+    Shift.findById(req.params.shiftId)
+    .then(shift => {
+        return res.json({ shift });
+    })
+    .catch(err => {
+        console.log(err.message);
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        return res.status(err.code || 500).json({ errorMessage: errorMsg }); 
+    })
+});
+
+// UPDATE 
+router.put('/:shiftId', authorization.auth, async (req, res) => {
+    const shift = await Shift.findById(req.params.shiftId)
+
+    const shiftUserId = shift.user._id.toString();
+    const tokenUserId = req.user._id.toString();
+
+    if (shiftUserId !== tokenUserId) {
+        // this user is not authorized to change this shift
+        return res.status(403).json({ errorMessage: '403: User is not authorized to make this request.' })
+    }
+
+    if (req.body.openForTrade) {
+        shift.openForTrade = req.body.openForTrade;
+    }
+    if (req.body.status) {
+        shift.status = req.body.status;
+    }
+    if (req.body.type) {
+        shift.type = req.body.type;
+    }
+    if (req.body.length) {
+        shift.length = req.body.length;
+    }
+    if (req.body.date) {
+        shift.date = req.body.date;
+    }
+
+    shift.save()
+    .then(shift => {
+        return res.json({ shift });
+    })
+    .catch(err => {
+        console.log(err.message);
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        return res.status(err.code || 500).json({ errorMessage: errorMsg }); 
+    })
+});
+
+// DELETE
+router.delete('/:shiftId', authorization.auth, (req, res) => {
+    Shift.findByIdAndDelete(req.params.shiftId)
+    .then(shift => {
+        return res.json({ message: `Succesfully deleted shift ${ shift._id }` });
+    })
+    .catch(err => {
+        console.log(err.message);
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        return res.status(err.code || 500).json({ errorMessage: errorMsg }); 
     });
 });
 

@@ -102,7 +102,7 @@ router.delete('/', authorization.auth, (req, res) => {
     })
 });
 
-// retrieves the groups that the user is part of
+// Retrieves a user's groups - no need for authorization
 router.get('/:userId/groups', async (req, res) => {
     const { userId } = req.params;
     User.findById(userId)
@@ -115,4 +115,33 @@ router.get('/:userId/groups', async (req, res) => {
     })
 });
 
+
+// Retrieves a user's shift - no need for authorization
+router.get('/:userId/shifts', (req, res) => {
+    const { userId } = req.params;
+    const { group, month, year } = req.query;
+
+    const start = new Date(year, month, 1);
+    const nextMonth = new Date(year, month + 1, 1);
+    nextMonth.setDate(nextMonth.getDate() - 1);
+    const end = new Date(nextMonth);
+
+    Shift.find({ 
+        user: userId, 
+        group: group, 
+        date: 
+        { 
+            $gte: new Date(new Date(start).setHours(00, 00, 00)), 
+            $lte: new Date(new Date(end).setHours(23, 59, 59))
+        } 
+    })
+    .then(shifts => {
+        return res.json({ shifts })
+    })
+    .catch(err => {
+        console.log(err.message);
+        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        return res.status(err.code || 500).json({ errorMessage: errorMsg });    
+    });
+});
 module.exports = router;
