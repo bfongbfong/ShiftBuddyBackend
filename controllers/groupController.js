@@ -14,6 +14,12 @@ class GroupController {
                 classifications
             } = body;
 
+            // Check that there is no group already with this name within the same hospital.
+            const foundGroup = await groupModel.findOne({ name, hospital })
+            if (foundGroup) {
+                reject({ message: `There is already a group inside hospital ${ hospital } with this name.` });
+            }
+
             const group = new groupModel({
                 name,
                 hospital,
@@ -23,8 +29,7 @@ class GroupController {
                 isPrivate,
                 classifications,
                 admins: [user],
-                members: [user],
-                memberCount: 1
+                members: [user]
             });
 
             // save the group 

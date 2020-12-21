@@ -9,13 +9,19 @@ const RequestSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    posterOriginalDate: {
-        type: Date,
+    posterOriginalShift: {
+        type: Schema.Types.ObjectId,
+        ref: 'Shift',
         required: true
     },
-    requesterOriginalDate: {
-        type: Date,
+    requestOriginalShift: {
+        type: Schema.Types.ObjectId,
+        ref: 'Shift',
         required: true
+    },
+    requesterFinalShift: { // check this date. if it exists, then the date was changed, if not, then check the original date
+        type: Schema.Types.ObjectId,
+        ref: 'Shift'
     },
     shiftLength: {
         type: String,
@@ -27,7 +33,6 @@ const RequestSchema = mongoose.Schema({
         enum: ShiftTypes,
         required: true
     },
-    offersCount: Number,
     offers: [
         {
             userID: String,
@@ -44,5 +49,8 @@ const RequestSchema = mongoose.Schema({
         required: true
     }
 });
+
+RequestSchema.virtual('offersCount').
+  get(function() { return this.proposedDates.length });
 
 module.exports = mongoose.model('Request', RequestSchema);

@@ -5,10 +5,11 @@ const Constants = require('../util/constants');
 const { body: check, validationResult } = require('express-validator');
 
 const HospitalController = require('../controllers/hospitalController');
+const authorization = require('../middleware/authorization');
 
 // CREATE
 const { emptyErrMsgSuffix } = Constants;
-router.post('/', [
+router.post('/', authorization.auth, [
     check('name').not().isEmpty().withMessage('Name' + emptyErrMsgSuffix),
     check('locationString').not().isEmpty().withMessage('locationString' + emptyErrMsgSuffix),
     check('latitude').not().isEmpty().withMessage('Latitude' + emptyErrMsgSuffix),
@@ -21,7 +22,7 @@ router.post('/', [
         return res.status(400).json({ errorMessage: errs[0].msg });
     }
 
-    HospitalController.createNewHospital(req.body)
+    HospitalController.createNewHospital(req.body, req.user)
     .then(hospital => {
         return res.json({hospital});
     })

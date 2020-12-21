@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const hospitalSchema = mongoose.Schema({
+const opts = { toJSON: { virtuals: true } };
+
+const HospitalSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     locationString: {
         type: String,
@@ -23,7 +26,25 @@ const hospitalSchema = mongoose.Schema({
             type: Schema.Types.ObjectId,
             ref: 'Group'
         }
-    ]
-});
+    ],
+    members: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
+    admins: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ],
+    imageUrl: {
+        type: String
+    }
+}, opts);
 
-module.exports = mongoose.model('Hospital', hospitalSchema);
+HospitalSchema.virtual('memberCount').
+  get(function() { return this.members.length });
+
+module.exports = mongoose.model('Hospital', HospitalSchema);

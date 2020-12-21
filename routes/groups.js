@@ -1,6 +1,5 @@
 // require express
 const express = require('express');
-const app = express();
 // import the router
 const router = express.Router();
 

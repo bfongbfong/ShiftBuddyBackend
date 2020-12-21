@@ -3,6 +3,8 @@ const { Schema } = mongoose;
 require('../enums/JobClassifications');
 require('../enums/ShiftLengths');
 
+const opts = { toJSON: { virtuals: true } };
+
 const GroupSchema = mongoose.Schema({
     name: {
         type: String,
@@ -46,34 +48,21 @@ const GroupSchema = mongoose.Schema({
     admins: [
         {
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: 'User'
         }
     ],
     members: [
         {
             type: Schema.Types.ObjectId,
-            ref: "User"
+            ref: 'User'
         }
     ],
-    memberCount: { // somehow get it to always equal the number of members
-        type: Number,
-        default: 0
-    },
     imageUrl: {
         type: String
-    },
-    locationString: {
-        type: String,
-        required: true
-    },
-    latitude: {
-        type: Number,
-        required: true
-    },
-    longitude: {
-        type: Number,
-        required: true
     }
-});
+}, opts);
+
+GroupSchema.virtual('memberCount').
+  get(function() { return this.members.length });
 
 module.exports = mongoose.model('Group', GroupSchema);

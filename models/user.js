@@ -68,7 +68,8 @@ const UserSchema = mongoose.Schema({
     email: { 
         type: String, 
         required: true,
-        validate: emailValidators
+        validate: emailValidators,
+        unique: true
     },
     password: { 
         type: String, 
@@ -91,6 +92,22 @@ const UserSchema = mongoose.Schema({
             }
         }
     ],
+    groupsWithAdminStatus: [
+        {
+            group: {
+                type: Schema.Types.ObjectId,
+                ref: 'Group'
+            }
+        }
+    ],
+    hospitalsWithAdminStatus: [
+        {
+            hospital: {
+                type: Schema.Types.ObjectId,
+                ref: 'Hospital'
+            }
+        }
+    ],
     isPremium: {
         type: Boolean,
         default: false
@@ -108,6 +125,7 @@ UserSchema.set('toJSON', {
 })
 
 UserSchema.pre('save', async function (next) {
+    console.log('running user save middleware');
     const user = this;
     if (!user.isModified('password')) {
         return next();
