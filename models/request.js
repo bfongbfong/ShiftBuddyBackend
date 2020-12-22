@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 require('../enums/ShiftLengths');
 require('../enums/ShiftTypes');
-require('../enums/ShiftStatuses');
+require('../enums/ShiftTradeStatuses');
 
 const RequestSchema = mongoose.Schema({
-    posterId: {
+    poster: {
         type: String,
         required: true
     },
@@ -14,12 +14,7 @@ const RequestSchema = mongoose.Schema({
         ref: 'Shift',
         required: true
     },
-    requestOriginalShift: {
-        type: Schema.Types.ObjectId,
-        ref: 'Shift',
-        required: true
-    },
-    requesterFinalShift: { // check this date. if it exists, then the date was changed, if not, then check the original date
+    requesterAcceptedShift: { 
         type: Schema.Types.ObjectId,
         ref: 'Shift'
     },
@@ -45,7 +40,7 @@ const RequestSchema = mongoose.Schema({
     ],
     status: {
         type: String,
-        enum: ShiftStatuses,
+        enum: ShiftTradeStatuses,
         required: true
     }
 });

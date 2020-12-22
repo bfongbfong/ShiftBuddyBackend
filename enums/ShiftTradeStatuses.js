@@ -1,4 +1,4 @@
-ShiftStatuses = [
+ShiftTradeStatuses = [
     'requested', 
     'pending', 
     'approved', 

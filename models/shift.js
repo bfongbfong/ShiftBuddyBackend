@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 require('../enums/ShiftTypes');
 require('../enums/ShiftLengths');
-require('../enums/ShiftStatuses');
+require('../enums/ShiftTradeStatuses');
 
 const ShiftSchema = mongoose.Schema({
     user: { 
@@ -25,8 +25,9 @@ const ShiftSchema = mongoose.Schema({
         default: false
     },
     status: { // this should be determined if openForTrade becomes true
+        // if pending, UI should look diff
         type: String, 
-        enum: ShiftStatuses, 
+        enum: ShiftTradeStatuses, 
         default: 'none'
     },
     date: { 
@@ -36,6 +37,10 @@ const ShiftSchema = mongoose.Schema({
     group: { 
         type: Schema.Types.ObjectId, 
         ref: "Group" 
+    },
+    wasTraded: { // set to true if user traded this shift away.
+        type: Boolean,
+        default: false
     }
 });
 
