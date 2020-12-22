@@ -7,6 +7,9 @@ const Group = require('../models/group');
 const GroupController = require('../controllers/groupController');
 
 const authorization = require('../middleware/authorization');
+const Constants = require('../util/constants');
+
+const { UKNOWN_ERROR } = Constants;
 
 // CREATE
 router.post('/', authorization.auth, (req, res) => {
@@ -26,26 +29,32 @@ router.get('/:groupId', (req, res) => {
     const { groupId } = req.params;
     Group.findById(groupId)
     .then(group => {
+        if (!group) {
+            return res.status(404).json({ errorMessage: 'Group not found.' });
+        }
         return res.json({ group });
     })
     .catch(err => {
         console.log(err);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     })
 });
 
 // UPDATE
-router.put('/:groupId', (req, res) => {
+router.patch('/:groupId', (req, res) => {
     Group.findByIdAndUpdate(
         req.params.groupId, 
         req.body, { new: true, runValidators: true })
     .then(group => {
+        if (!group) {
+            return res.status(404).json({ errorMessage: 'Group not found.' });
+        }
         return res.json({ group });
     })
     .catch(err => {
         console.log(err);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     })
 })
@@ -54,11 +63,14 @@ router.put('/:groupId', (req, res) => {
 router.delete('/:groupId', (req, res) => {
     Group.findByIdAndDelete(req.params.groupId)
     .then(group => {
+        if (!group) {
+            return res.status(404).json({ errorMessage: 'Group not found.' });
+        }
         return res.json({ message: `Succesfully deleted group ${ group._id} `});
     })
     .catch(err => {
         console.log(err);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     })
 });

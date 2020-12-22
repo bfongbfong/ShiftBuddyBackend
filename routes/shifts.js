@@ -9,7 +9,7 @@ const Constants = require('../util/constants');
 
 const shiftModel = require('../models/shift');
 
-const { emptyErrMsgSuffix } = Constants;
+const { emptyErrMsgSuffix, UKNOWN_ERROR } = Constants;
 
 // CREATE
 router.post('/', authorization.auth, [
@@ -44,7 +44,7 @@ router.post('/', authorization.auth, [
         return res.json({ shift });
     })
     .catch(err => {
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });    
     });
 });
@@ -53,18 +53,24 @@ router.post('/', authorization.auth, [
 router.get('/:shiftId', (req, res) => {
     Shift.findById(req.params.shiftId)
     .then(shift => {
+        if (!shift) {
+            return res.status(404).json({ errorMessage: 'Shift not found.' });
+        }
         return res.json({ shift });
     })
     .catch(err => {
         console.log(err.message);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg }); 
     })
 });
 
 // UPDATE 
-router.put('/:shiftId', authorization.auth, async (req, res) => {
+router.patch('/:shiftId', authorization.auth, async (req, res) => {
     const shift = await Shift.findById(req.params.shiftId)
+    if (!shift) {
+        return res.status(404).json({ errorMessage: 'Shift not found.' });
+    }
 
     const shiftUserId = shift.user._id.toString();
     const tokenUserId = req.user._id.toString();
@@ -96,7 +102,7 @@ router.put('/:shiftId', authorization.auth, async (req, res) => {
     })
     .catch(err => {
         console.log(err.message);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg }); 
     })
 });
@@ -105,11 +111,14 @@ router.put('/:shiftId', authorization.auth, async (req, res) => {
 router.delete('/:shiftId', authorization.auth, (req, res) => {
     Shift.findByIdAndDelete(req.params.shiftId)
     .then(shift => {
+        if (!shift) {
+            return res.status(404).json({ errorMessage: 'Shift not found.' });
+        }
         return res.json({ message: `Succesfully deleted shift ${ shift._id }` });
     })
     .catch(err => {
         console.log(err.message);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg }); 
     });
 });

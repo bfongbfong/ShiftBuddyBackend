@@ -18,24 +18,21 @@ const RequestSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Shift'
     },
-    shiftLength: {
+    shiftLength: { // shiftlength is here but not type because the length must be the same between traded 2, whereas type doesn't
         type: String,
         enum: ShiftLengths,
         required: true
-    },
-    type: {
-        type: String,
-        enum: ShiftTypes,
-        required: true
-    },
+    }, 
     offers: [
         {
-            userID: String,
-            proposedDates: [
-                {
-                    type: Date
-                }
-            ]
+            proposer: {
+                type: Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            proposedShift:  {
+                type: Schema.Types.ObjectId,
+                ref: 'Shift'
+            }
         }
     ],
     status: {
@@ -46,6 +43,6 @@ const RequestSchema = mongoose.Schema({
 });
 
 RequestSchema.virtual('offersCount').
-  get(function() { return this.proposedDates.length });
+  get(function() { return this.proposedShifts.length });
 
 module.exports = mongoose.model('Request', RequestSchema);

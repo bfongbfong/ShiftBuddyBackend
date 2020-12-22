@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const mongoose = express('mongoose');
 const Constants = require('../util/constants');
+const { emptyErrMsgSuffix, UKNOWN_ERROR } = Constants;
+
 
 const { body: check, validationResult } = require('express-validator');
 
@@ -19,7 +21,7 @@ router.post('/login', async (req, res) => {
         return res.json(resultObj);
     })
     .catch(err => {
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     });
 });
@@ -28,7 +30,6 @@ router.post('/login', async (req, res) => {
 // CREATE
 // Validation within the route checks if the values are empty or not.
 // Validation for email and password happen in mongoose
-const { emptyErrMsgSuffix } = Constants;
 router.post('/register', [
     check('email').not().isEmpty().withMessage('Email' + emptyErrMsgSuffix),
     check('password').not().isEmpty().withMessage('Password' + emptyErrMsgSuffix),
@@ -50,12 +51,12 @@ router.post('/register', [
     })
     .catch(err => { 
         console.log('error here');
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     });
 })
 
-// READ
+// READ - Subjective
 router.get('/userInfo', authorization.auth, (req, res) => {
     const { user } = req;
     return res.json({ user });
@@ -63,7 +64,7 @@ router.get('/userInfo', authorization.auth, (req, res) => {
 
 
 // UPDATE
-router.put('/', authorization.auth, (req, res) => {
+router.patch('/', authorization.auth, (req, res) => {
     if (req.body.password) {
         delete req.body.password;
     }
@@ -97,7 +98,7 @@ router.delete('/', authorization.auth, (req, res) => {
         return res.json({ message: `Successfully deleted user ${ req.user._id }` });
     })
     .catch(err => {
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     })
 });
@@ -107,10 +108,13 @@ router.get('/:userId/groups', async (req, res) => {
     const { userId } = req.params;
     User.findById(userId)
     .then(foundUser => {
+        if (!foundUser) {
+            return res.status(404).json({ errorMessage: 'User not found.' });
+        }
         return res.json({ groups: foundUser.groups });
     })
     .catch(err => {
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });
     })
 });
@@ -140,7 +144,7 @@ router.get('/:userId/shifts', (req, res) => {
     })
     .catch(err => {
         console.log(err.message);
-        const errorMsg = err.message || constants.UKNOWN_ERROR;
+        const errorMsg = err.message || UKNOWN_ERROR;
         return res.status(err.code || 500).json({ errorMessage: errorMsg });    
     });
 });
