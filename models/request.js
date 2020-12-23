@@ -32,13 +32,18 @@ const RequestSchema = mongoose.Schema({
             proposedShift:  {
                 type: Schema.Types.ObjectId,
                 ref: 'Shift'
+            },
+            status: {
+                type: String,
+                enum: ShiftTradeStatuses,
+                default: 'requested'
             }
         }
     ],
     status: {
         type: String,
         enum: ShiftTradeStatuses,
-        required: true
+        default: 'none'
     }
 });
 
