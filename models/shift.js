@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+require('../enums/ShiftTypes');
+require('../enums/ShiftLengths');
+require('../enums/ShiftTradeStatuses');
 
 const ShiftSchema = mongoose.Schema({
-    id: { 
-        type: String, 
-        required: true 
-    },
     user: { 
         type: Schema.Types.ObjectId, 
-        ref: "User"
+        ref: "User",
+        required: true
     },
     type: { 
         type: String, 
@@ -20,18 +20,27 @@ const ShiftSchema = mongoose.Schema({
         enum: ShiftLengths, 
         required: true 
     },
-    status: { 
+    openForTrade: { // if this is true, anyone in the unit can see. if not, it is private.
+        type: Boolean,
+        default: false
+    },
+    status: { // this should be determined if openForTrade becomes true
+        // if pending, UI should look diff
         type: String, 
-        enum: ShiftStatuses, 
-        required: true 
+        enum: ShiftTradeStatuses, 
+        default: 'none'
     },
     date: { 
         type: Date, 
         required: true 
     },
-    unit: { 
+    group: { 
         type: Schema.Types.ObjectId, 
-        ref: "Unit" 
+        ref: "Group" 
+    },
+    wasTraded: { // set to true if user traded this shift away.
+        type: Boolean,
+        default: false
     }
 });
 
